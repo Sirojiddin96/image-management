@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface DeleteImageProps {
   isOpen: boolean;
@@ -9,10 +9,18 @@ interface DeleteImageProps {
 }
 
 const DeleteImage: React.FC<DeleteImageProps> = ({ isOpen, onClose, onDelete, title, message }) => {
+  const [opened, setOpen] = useState(false);
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => { setOpen(true) }, 100)
+    } else {
+      setOpen(false)
+    }
+  }, [isOpen])
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.54)]">
+    <div className={`fixed inset-0 flex items-center justify-center bg-[rgba(0,0,0,0.54)] transition-all duration-200 ease-in-out ${opened ? 'opacity-100' : 'opacity-0'}`}>
       <div className="bg-white rounded-lg shadow-lg w-96 p-6 z-50">
         <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
         <p className="mt-2 text-sm text-gray-600">

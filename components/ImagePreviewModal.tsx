@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ImagePreviewModalProps {
   isOpen: boolean;
@@ -8,10 +8,10 @@ interface ImagePreviewModalProps {
 }
 
 const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen, onClose }) => {
-  const [opened, setOpen] = React.useState(false);
+  const [opened, setOpen] = useState(false);
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => { setOpen(true) }, 200)
+      setTimeout(() => { setOpen(true) }, 100)
     } else {
       setOpen(false)
     }
