@@ -1,5 +1,6 @@
 'use client';
 import { useState } from "react";
+import JSZip from "jszip";
 import ImageCard from "@/components/ImageCard";
 import PageHeader from "@/components/PageHeader";
 import useFetchImages, { ImageProp } from "@/hooks/fetchImage";
@@ -31,6 +32,25 @@ export default function Home() {
     setDeleteOpen(false);
   };
 
+  const downloadImage = async (image: ImageProp) => {
+    const zip = new JSZip();
+    const originalFilePromise = fetch(`/${image.originalFile}`).then(res => res.blob());
+    const compressedFilePromise = fetch(`/${image.compressedFile}`).then(res => res.blob());
+    Promise.all([originalFilePromise, compressedFilePromise]).then(([originalBlob, compressedBlob]) => {
+      zip.file(image.originalFile, originalBlob);
+      zip.file(image.compressedFile, compressedBlob);
+
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `images_${image.id}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    });
+  }
+
   return (
     <main className="flex min-h-[100vh] flex-col items-start justify-start p-4">
       <div className="flex flex-col items-center justify-center w-full gap-2">
@@ -61,6 +81,7 @@ export default function Home() {
                   setImage(_);
                   setPreviewOpen(true);
                 }}
+                handleDownloadImage={() => downloadImage(_)}
               />
             )) :
             <div className="flex min-h-[75vh] flex-row items-center justify-center w-full">

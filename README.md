@@ -27,26 +27,6 @@ This project uses the following architectural principles:
 - **Modular Components**: The application is structured with reusable and maintainable components.
 - **API Routes**: Built-in API routes are used for server-side logic.
 
-## Running and Testing the Application
-
-To run the application:
-
-1. Start the development server:
-  ```bash
-  npm run dev
-  ```
-
-2. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-To test the application:
-
-1. Run the test suite:
-  ```bash
-  npm test
-  ```
-
-2. For end-to-end testing, use a tool like Cypress or Playwright (if configured).
-
 ## Assumptions and Limitations
 
 - The application assumes a modern browser with JavaScript enabled.

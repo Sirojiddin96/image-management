@@ -22,7 +22,7 @@ const ImageCard = ({
     <div className="w-100 h-72 flex flex-col items-center justify-between p-3 border-1 border-gray-300 rounded-lg">
       <div className="w-full flex flex-row gap-x-3 items-center justify-center">
         <div className="flex flex-col items-start justify-start gap-1">
-          <div className="h-46 flex items-center justify-center overflow-hidden relative">
+          <div className="h-46 flex items-center justify-center overflow-hidden relative rounded-lg bg-[rgba(0,0,0,0.2)]">
             <Image
               src={`/${image.compressedFile}`}
               alt="Uploaded Image"
@@ -38,7 +38,7 @@ const ImageCard = ({
           <span className="text-sm text-gray-500">Size: {formatSize(image.compressedSize)} </span>
         </div>
         <div className="flex flex-col items-start justify-start gap-1">
-          <div className="h-46 flex items-center justify-center overflow-hidden">
+            <div className="h-46 flex items-center justify-center overflow-hidden rounded-lg bg-[rgba(0,0,0,0.2)]">
             <Image
               src={`/${image.originalFile}`}
               alt="Uploaded Image"
@@ -49,7 +49,7 @@ const ImageCard = ({
               className="rounded-lg cursor-pointer overflow-hidden"
               onClick={() => handleImagePreview && handleImagePreview(image.originalFile)}
             />
-          </div>
+            </div>
           <span className="text-sm text-gray-500">Original</span>
           <span className="text-sm text-gray-500">Size: {formatSize(image.size)}</span>
         </div>
