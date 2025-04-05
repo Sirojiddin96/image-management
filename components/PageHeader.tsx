@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const PageHeader = (props: HeaderProps) => {
   return (
-    <div className="flex flex-row items-end justify-between w-full">
+    <div className="flex flex-col md:flex-row items-end justify-between w-full">
       <div>
         <h1 className="text-2xl font-bold mb-4">Image Management Tool</h1>
         <p className="mb-4">
@@ -28,7 +28,6 @@ const PageHeader = (props: HeaderProps) => {
         </button>
         <input
           className="border-1 border-gray-300 p-2 rounded-lg display-none"
-          multiple
           type="file"
           accept="image/png, image/jpeg, image/jpg, image/webp"
           title="Choose an image file"

@@ -17,40 +17,17 @@ export async function GET() {
     const images: ImageProp[] = await new Promise((resolve, reject) => {
       sqlDB.all('SELECT * FROM images', (err, rows) => {
         if (err) {
-          console.error('❌ Failed to fetch images:', err.message);
           reject(err);
+          return createResponse(`Failed to fetch images: ${err.message}`);
         } else {
           resolve(rows as ImageProp[]);
         }
       });
     })
 
-    return new Response(
-      JSON.stringify({
-        resp: images,
-        success: true,
-        message: 'Images sent successfully'
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return createResponse('Images sent successfully', 200, true, images);
   } catch {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Failed to fetch images',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return createResponse('Failed to fetch images')
   }
 }
 
@@ -101,15 +78,15 @@ export async function POST(req: NextRequest) {
           [file.name, file.type, file.size, outputBuffer.length, originalAbsolutePath, compressedAbsolutePath],
           async (err) => {
             if (err) {
-              console.error("Error saving to database:", err.message);
               reject(err);
+              return createResponse(`Error saving to database:: ${err.message}`, 500)
             } else {
               // Save original file
               await writeFile(originalPath, buffer);
               // Save compressed file
               await writeFile(compressedPath, outputBuffer);
-              console.log("Image details saved to database successfully.");
               resolve();
+              return createResponse("Image details saved to database successfully.", 200, true);
             }
           }
         );
@@ -122,42 +99,17 @@ export async function POST(req: NextRequest) {
           [originalAbsolutePath, compressedAbsolutePath],
           (err, row) => {
             if (err) {
-              console.error("Error fetching new image from database:", err.message);
               reject(err);
+              return createResponse(`Error fetching new image from database: ${err.message}`, 500)
             } else {
               resolve(row as ImageProp);
             }
           });
       });
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: 'Image compressed successfully',
-          resp: newImage,
-        }),
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
-      );
+      return createResponse('Image compressed successfully', 200, true, [newImage])
     }
-  } catch (error) {
-    console.error(error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Error compressing image',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }
-    );
+  } catch {
+    return createResponse('Error compressing image', 500)
   }
 }
 
@@ -165,14 +117,13 @@ export async function DELETE(req: NextRequest) {
   const { id, name, originalFile, compressedFile } = await req.json();
 
   if (!id || !name) {
-    return await cleanDatabase();
+    return cleanDatabase();
   }
 
   try {
-    const result = await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       sqlDB.run('DELETE FROM images WHERE id = ?', [id], function (err) {
         if (err) {
-          console.error('Error deleting image from database:', err.message);
           reject(err);
         } else {
           // Delete the image files from the server
@@ -188,60 +139,28 @@ export async function DELETE(req: NextRequest) {
           if (existsSync(originalImagePath)) {
             fs.unlink(originalImagePath, (err) => {
               if (err) {
-                console.error('Error deleting original image file:', err.message);
                 reject(err);
               } else {
                 resolve();
-                console.log('Original image file deleted successfully.');
               }
             });
-          } else {
-            console.log('Original image file does not exist, skipping deletion.');
           }
 
           if (existsSync(compressedImagePath)) {
             fs.unlink(compressedImagePath, (err) => {
               if (err) {
-                console.error('Error deleting compressed image file:', err.message);
                 reject(err);
               } else {
                 resolve();
-                console.log('Compressed image file deleted successfully.');
               }
             });
-          } else {
-            console.log('Compressed image file does not exist, skipping deletion.');
           }
         }
       });
     });
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Image deleted successfully',
-        resp: result,
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return createResponse('Image deleted successfully', 200, true)
   } catch {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Error deleting image',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return createResponse('Error deleting image', 500)
   }
 }
 
@@ -264,46 +183,40 @@ async function cleanDatabase() {
 
     fs.rm(originalDir, { recursive: true, force: true }, (err) => {
       if (err) {
-        console.error('Error deleting original images directory:', err.message);
+        return createResponse(`Error deleting compressed images directory: ${err.message}`);
       } else {
-        console.log('Original images directory deleted successfully.');
+        return createResponse('Original images directory deleted successfully', 200, true)
       }
     });
 
     fs.rm(compressedDir, { recursive: true, force: true }, (err) => {
       if (err) {
-        console.error('Error deleting compressed images directory:', err.message);
+        return createResponse(`Error deleting compressed images directory: ${err.message}`);
       } else {
-        console.log('Compressed images directory deleted successfully.');
+        return createResponse('Compressed images directory deleted successfully.', 200, true)
       }
     });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Database cleaned successfully',
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+
+    return createResponse('Database cleaned successfully', 200, true)
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'Error cleaning database',
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    return createResponse('Error cleaning database', 500)
   }
 }
 
+function createResponse(message: string, status: number = 500, success: boolean = false, resp: ImageProp[] | null = null) {
+  return new Response(
+    JSON.stringify({
+      success,
+      message,
+      resp
+    }),
+    {
+      status,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+}

@@ -43,7 +43,7 @@ export default function Home() {
             })
             setDeleteOpen(true);
           }} />
-        <div className="w-full min-h-[75vh] flex flex-row gap-2 items-start p-4 rounded-lg border-1 border-gray-300 overflow-auto">
+        <div className="w-full min-h-[75vh] flex flex-col md:flex-row flex-wrap gap-2 items-start p-4 rounded-lg border-1 border-gray-300 overflow-auto">
           {images?.length > 0 && !loading ?
             images.map((_) => (
               <ImageCard

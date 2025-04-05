@@ -22,7 +22,7 @@ const ImageCard = ({
     <div className="w-100 h-72 flex flex-col items-center justify-between p-3 border-1 border-gray-300 rounded-lg">
       <div className="w-full flex flex-row gap-x-3 items-center justify-center">
         <div className="flex flex-col items-start justify-start gap-1">
-          <div className="h-46 flex items-center justify-center relative">
+          <div className="h-46 flex items-center justify-center overflow-hidden relative">
             <Image
               src={`/${image.compressedFile}`}
               alt="Uploaded Image"
@@ -30,16 +30,15 @@ const ImageCard = ({
               height={200}
               priority={true}
               style={{objectFit: 'cover', overflow: 'hidden' }}
-              className="rounded-lg cursor-pointer"
-              onClick={() => handleImagePreview && handleImagePreview(image.compressedFile)}
-              onLoad={() => URL.revokeObjectURL(image.compressedFile)}
+              className="rounded-lg cursor-pointer overflow-hidden"
+              onClick={() => handleImagePreview && handleImagePreview(image.compressedFile)}  
             />
           </div>
           <span className="text-sm text-gray-500">Compressed</span>
           <span className="text-sm text-gray-500">Size: {formatSize(image.compressedSize)} </span>
         </div>
         <div className="flex flex-col items-start justify-start gap-1">
-          <div className="h-46 flex items-center justify-center">
+          <div className="h-46 flex items-center justify-center overflow-hidden">
             <Image
               src={`/${image.originalFile}`}
               alt="Uploaded Image"
@@ -47,9 +46,8 @@ const ImageCard = ({
               height={200}
               priority={true}
               style={{ objectFit: 'cover', overflow: 'hidden' }}
-              className="rounded-lg cursor-pointer"
+              className="rounded-lg cursor-pointer overflow-hidden"
               onClick={() => handleImagePreview && handleImagePreview(image.originalFile)}
-              onLoad={() => URL.revokeObjectURL(image.originalFile)}
             />
           </div>
           <span className="text-sm text-gray-500">Original</span>

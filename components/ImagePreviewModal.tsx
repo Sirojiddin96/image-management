@@ -12,7 +12,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen,
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => { setOpen(true) }, 200)
-    }else{
+    } else {
       setOpen(false)
     }
   }, [isOpen])
@@ -32,11 +32,11 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen,
           <Image
             src={`/${imageUrl}`}
             alt="Uploaded Image"
-            width={500}
-            height={500}
+            width={350}
+            height={350}
             priority={true}
-            style={{ objectFit: 'cover' }}
-            className="rounded-lg mr-3"
+            style={{ objectFit: 'contain', height: '80vh' }}
+            className="rounded-lg"
             onLoad={() => URL.revokeObjectURL(imageUrl)}
           />
         </div>

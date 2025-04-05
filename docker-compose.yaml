@@ -10,7 +10,7 @@ services:
       - '3000:3000'
     volumes:
       - sqlite-data:/app/db
-      - uploads:/app/public/uploads
+      - ./public/uploads:/app/public/uploads
 
 volumes:
   sqlite-data:

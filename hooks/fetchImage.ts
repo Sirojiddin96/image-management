@@ -79,7 +79,7 @@ const useFetchImages = (apiUrl: string) => {
       });
       const data = await res.json();
       if (data.success) {
-        setImages(prev => [...prev, data.resp]);
+        setImages(prev => [...prev, data.resp[0]]);
       } else {
         throw new Error(data.message);
       }

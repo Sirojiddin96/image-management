@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "docker-down": "docker-compose down -v",
     "docker-start": "docker compose up --build -d"
   },
   "dependencies": {
