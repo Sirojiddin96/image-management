@@ -8,7 +8,7 @@ interface DeleteImageProps {
   message?: string;
 }
 
-const DeleteImage: React.FC<DeleteImageProps> = ({ isOpen, onClose, onDelete, title, message }) => {
+const DeleteImage= ({ isOpen, onClose, onDelete, title, message }: DeleteImageProps) => {
   const [opened, setOpen] = useState(false);
   useEffect(() => {
     if (isOpen) {

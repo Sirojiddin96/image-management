@@ -8,7 +8,7 @@ import LoadingAction from "@/components/LoadingAction";
 import ImagePreviewModal from "@/components/ImagePreviewModal";
 import DeleteImage from "@/components/DeleteImage";
 
-export default function Home() {
+const Home = () => {
   const [isPreviewOpen, setPreviewOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [image, setImage] = useState<ImageProp>({} as ImageProp);
@@ -118,3 +118,4 @@ export default function Home() {
     </main>
   );
 }
+export default Home;
