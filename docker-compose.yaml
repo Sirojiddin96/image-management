@@ -8,8 +8,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - '3000:3000'
-    env_file:
-      - .env.docker
     volumes:
       - sqlite-data:/app/db
       - ./public/uploads:/app/public/uploads
