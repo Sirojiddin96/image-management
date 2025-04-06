@@ -1,3 +1,7 @@
+
+## Required
+Docker needs to be installed in OS
+
 ## Setup and Installation
 
 To set up the project, follow these steps:

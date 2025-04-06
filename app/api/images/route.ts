@@ -37,13 +37,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
-  const files = formData.getAll('files') as File[];
+  const file = formData.get('files');
   try {
-    if (!files.length) {
-      return new Response(JSON.stringify({ error: 'No files uploaded' }), { status: 400 });
-    }
-
-    for (const file of files) {
+      if (!file || !(file instanceof File)) {
+        return createResponse('Invalid file', 400);
+      }
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
@@ -111,7 +109,6 @@ export async function POST(req: NextRequest) {
           });
       });
       return successResponse('Image uploaded successfully', [newImage]);
-    }
   } catch {
     return createResponse('Error compressing image', 500)
   }

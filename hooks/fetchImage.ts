@@ -68,9 +68,7 @@ const useFetchImages = (apiUrl: string) => {
     if (!files) return;
 
     const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append('files', file);
-    });
+    formData.append('files', files[0]);
 
     try {
       const res = await fetch(apiUrl, {
