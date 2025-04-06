@@ -30,7 +30,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen,
       <div className="relative bg-white rounded-lg shadow-lg max-w-3xl">
         <div className="p-4">
           <Image
-            src={`/${imageUrl}`}
+            src={`/api/image?file=${imageUrl}`}
             alt="Uploaded Image"
             width={350}
             height={350}

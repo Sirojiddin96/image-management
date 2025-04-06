@@ -7,7 +7,7 @@ interface ImageCardProps {
   key: string
   image: ImageProp
   handleImageDelete?: (path: string) => void
-  handleImagePreview?: (path: string) => void
+  handleImagePreview?: (path: string, type: string) => void
   handleDownloadImage?: (path: string) => void
 }
 
@@ -24,14 +24,14 @@ const ImageCard = ({
         <div className="flex flex-col items-start justify-start gap-1">
           <div className="h-46 flex items-center justify-center overflow-hidden relative rounded-lg bg-[rgba(0,0,0,0.2)]">
             <Image
-              src={`/${image.compressedFile}`}
+              src={`/api/image?file=${image.compressedFile}`}
               alt="Uploaded Image"
               width={200}
               height={200}
               priority={true}
               style={{objectFit: 'cover', overflow: 'hidden' }}
               className="rounded-lg cursor-pointer overflow-hidden"
-              onClick={() => handleImagePreview && handleImagePreview(image.compressedFile)}  
+              onClick={() => handleImagePreview && handleImagePreview(image.compressedFile, 'compressed')}  
             />
           </div>
           <span className="text-sm text-gray-500">Compressed</span>
@@ -40,14 +40,14 @@ const ImageCard = ({
         <div className="flex flex-col items-start justify-start gap-1">
             <div className="h-46 flex items-center justify-center overflow-hidden rounded-lg bg-[rgba(0,0,0,0.2)]">
             <Image
-              src={`/${image.originalFile}`}
+               src={`/api/image?file=${image.originalFile}`}
               alt="Uploaded Image"
               width={200}
               height={200}
               priority={true}
               style={{ objectFit: 'cover', overflow: 'hidden' }}
               className="rounded-lg cursor-pointer overflow-hidden"
-              onClick={() => handleImagePreview && handleImagePreview(image.originalFile)}
+              onClick={() => handleImagePreview && handleImagePreview(image.originalFile, 'original')}
             />
             </div>
           <span className="text-sm text-gray-500">Original</span>

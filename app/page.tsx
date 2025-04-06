@@ -12,6 +12,7 @@ const Home = () => {
   const [isPreviewOpen, setPreviewOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [image, setImage] = useState<ImageProp>({} as ImageProp);
+  const [imagePath, setImagePath] = useState<string>('');
   const [deleteInfo, setDeleteInfo] = useState({
     title: '',
     message: '',
@@ -77,8 +78,8 @@ const Home = () => {
                     message: 'Are you sure you want to delete this image? This action cannot be undone.',
                   });
                 }}
-                handleImagePreview={() => {
-                  setImage(_);
+                handleImagePreview={(imageUrl) => {
+                  setImagePath(imageUrl);
                   setPreviewOpen(true);
                 }}
                 handleDownloadImage={() => downloadImage(_)}
@@ -99,7 +100,7 @@ const Home = () => {
       <ImagePreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setPreviewOpen(false)}
-        imageUrl={image.originalFile}
+        imageUrl={imagePath}
       />
       <DeleteImage
         isOpen={isDeleteOpen}

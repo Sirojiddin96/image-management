@@ -12,8 +12,7 @@ interface ImageProp extends File {
   id: number;
 }
 
-export async function GET(res: NextResponse) {
-  console.log(res.status);
+export async function GET() {
   try {
     const images: ImageProp[] = await new Promise((resolve, reject) => {
       sqlDB.all('SELECT * FROM images', (err, rows) => {
