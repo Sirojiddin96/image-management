@@ -40,7 +40,7 @@ const ImageCard = ({
         <div className="flex flex-col items-start justify-start gap-1">
             <div className="h-46 flex items-center justify-center overflow-hidden rounded-lg bg-[rgba(0,0,0,0.2)]">
             <Image
-               src={`/api/image?file=${image.originalFile}`}
+              src={`/api/image?file=${image.originalFile}`}
               alt="Uploaded Image"
               width={200}
               height={200}

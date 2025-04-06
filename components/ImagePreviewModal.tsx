@@ -5,9 +5,10 @@ interface ImagePreviewModalProps {
   isOpen: boolean;
   imageUrl: string;
   onClose: () => void;
+  type: string;
 }
 
-const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen, onClose }) => {
+const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen, type, onClose }) => {
   const [opened, setOpen] = useState(false);
   useEffect(() => {
     if (isOpen) {
@@ -34,8 +35,9 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, isOpen,
             alt="Uploaded Image"
             width={350}
             height={350}
+            unoptimized={type === 'original'}
             priority={true}
-            style={{ objectFit: 'contain', height: '80vh' }}
+            style={{ objectFit: 'contain', height: '80vh', width: 'auto' }}
             className="rounded-lg"
             onLoad={() => URL.revokeObjectURL(imageUrl)}
           />

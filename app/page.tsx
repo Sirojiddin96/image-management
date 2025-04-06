@@ -13,6 +13,7 @@ const Home = () => {
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [image, setImage] = useState<ImageProp>({} as ImageProp);
   const [imagePath, setImagePath] = useState<string>('');
+  const [type, setType] = useState<string>('' as string);
   const [deleteInfo, setDeleteInfo] = useState({
     title: '',
     message: '',
@@ -78,7 +79,8 @@ const Home = () => {
                     message: 'Are you sure you want to delete this image? This action cannot be undone.',
                   });
                 }}
-                handleImagePreview={(imageUrl) => {
+                handleImagePreview={(imageUrl, type) => {
+                  setType(type)
                   setImagePath(imageUrl);
                   setPreviewOpen(true);
                 }}
@@ -101,6 +103,7 @@ const Home = () => {
         isOpen={isPreviewOpen}
         onClose={() => setPreviewOpen(false)}
         imageUrl={imagePath}
+        type={type}
       />
       <DeleteImage
         isOpen={isDeleteOpen}

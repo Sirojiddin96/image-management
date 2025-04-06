@@ -11,7 +11,6 @@ export async function GET(req: Request) {
   }
 
   const filePath = path.join(process.cwd(), 'public', fileParam);
-  console.log("##", filePath);
 
   if (!fs.existsSync(filePath)) {
     return new NextResponse('File not found', { status: 404 });
