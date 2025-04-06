@@ -22,6 +22,11 @@ To set up the project, follow these steps:
   npm run dev
   ```
 
+4. Running on:
+ ```bash
+ localhost:3000
+ ```
+
 ## Setup via docker container
 
 1. Clone the repository:
@@ -40,6 +45,11 @@ To set up the project, follow these steps:
   npm run docker-down
   ```
 
+4. Running on:
+ ```bash
+ localhost:3000  // if you run first in locally and the docker, please first stop local since docker server runs 3000 port.
+ ```
+
 ## Architectural Decisions
 
 This project uses the following architectural principles:
@@ -48,9 +58,9 @@ This project uses the following architectural principles:
 - **TypeScript**: Ensures type safety and reduces runtime errors.
 - **Modular Components**: The application is structured with reusable and maintainable components.
 - **API Routes**: Built-in API routes are used for server-side logic.
-- **Limitation**: Currently file upload only receives single file including: image/png, image/jpeg, image/jpg, image/webp.
 
 ## Assumptions and Limitations
 
 - The application assumes a modern browser with JavaScript enabled.
-- It is designed to run locally or on a Node.js-compatible hosting environment.
+- Currently file upload only receives single file including: image/png, image/jpeg, image/jpg, image/webp.
+- There is pagination in image list, instead page is scrollable.
