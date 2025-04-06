@@ -17,6 +17,7 @@ const DeleteImage= ({ isOpen, onClose, onDelete, title, message }: DeleteImagePr
       setOpen(false)
     }
   }, [isOpen])
+  
   if (!isOpen) return null;
 
   return (

@@ -1,33 +1,38 @@
 'use server'
 
+import fs, { existsSync } from 'fs';
+import { NextRequest, NextResponse } from 'next/server';
+import path from 'path';
 import sharp from 'sharp';
 import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import sqlDB from '../../../connect';
-import { NextRequest } from 'next/server';
-import { existsSync } from 'fs';
-import fs from 'fs';
+import { internalServerError } from '../errorHandler';
 
 interface ImageProp extends File {
   id: number;
 }
 
-export async function GET() {
+export async function GET(res: NextResponse) {
+  console.log(res.status);
   try {
     const images: ImageProp[] = await new Promise((resolve, reject) => {
       sqlDB.all('SELECT * FROM images', (err, rows) => {
         if (err) {
           reject(err);
-          return createResponse(`Failed to fetch images: ${err.message}`);
+          return internalServerError(`Failed to fetch images: ${err.message}`);
         } else {
           resolve(rows as ImageProp[]);
         }
       });
     })
 
-    return createResponse('Images sent successfully', 200, true, images);
+    return NextResponse.json({
+      success: true,
+      message: 'Images fetched successfully',
+      resp: images
+    }, { status: 200 })
   } catch {
-    return createResponse('Failed to fetch images')
+    return internalServerError('Failed to fetch images');
   }
 }
 
@@ -79,14 +84,14 @@ export async function POST(req: NextRequest) {
           async (err) => {
             if (err) {
               reject(err);
-              return createResponse(`Error saving to database:: ${err.message}`, 500)
+              return internalServerError(`Error saving to database: ${err.message}`);
             } else {
               // Save original file
               await writeFile(originalPath, buffer);
               // Save compressed file
               await writeFile(compressedPath, outputBuffer);
               resolve();
-              return createResponse("Image details saved to database successfully.", 200, true);
+              return successResponse('Image details saved to database successfully.')
             }
           }
         );
@@ -106,7 +111,7 @@ export async function POST(req: NextRequest) {
             }
           });
       });
-      return createResponse('Image compressed successfully', 200, true, [newImage])
+      return successResponse('Image uploaded successfully', [newImage]);
     }
   } catch {
     return createResponse('Error compressing image', 500)
@@ -158,7 +163,7 @@ export async function DELETE(req: NextRequest) {
         }
       });
     });
-    return createResponse('Image deleted successfully', 200, true)
+    return successResponse('Image deleted successfully');
   } catch {
     return createResponse('Error deleting image', 500)
   }
@@ -185,7 +190,7 @@ async function cleanDatabase() {
       if (err) {
         return createResponse(`Error deleting compressed images directory: ${err.message}`);
       } else {
-        return createResponse('Original images directory deleted successfully', 200, true)
+        return successResponse('Original images directory deleted successfully')
       }
     });
 
@@ -193,12 +198,11 @@ async function cleanDatabase() {
       if (err) {
         return createResponse(`Error deleting compressed images directory: ${err.message}`);
       } else {
-        return createResponse('Compressed images directory deleted successfully.', 200, true)
+        return successResponse('Compressed images directory deleted successfully')
       }
     });
 
-
-    return createResponse('Database cleaned successfully', 200, true)
+    return successResponse('Database cleaned successfully', null);
   } catch (error) {
     console.error(error);
     return createResponse('Error cleaning database', 500)
@@ -219,4 +223,12 @@ function createResponse(message: string, status: number = 500, success: boolean 
       },
     }
   );
+}
+
+function successResponse(message: string, resp: ImageProp[] | null = null) {
+  return NextResponse.json({
+    success: true,
+    message,
+    resp
+  }, { status: 200 })
 }
