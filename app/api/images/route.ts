@@ -36,81 +36,84 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData()
-  const file = formData.get('files');
+  const formData = await req.formData();
+  const file = formData.get('files') as File;
+
+  if (!file) {
+    return new Response(JSON.stringify({ error: 'No file uploaded' }), { status: 400 });
+  }
+
   try {
-      if (!file || !(file instanceof File)) {
-        return createResponse('Invalid file', 400);
-      }
-      const arrayBuffer = await file.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-      // Create directories if they don’t exist
-      const baseDir = path.join(process.cwd(), 'public', 'uploads');
-      const originalDir = path.join(baseDir, 'original');
-      const compressedDir = path.join(baseDir, 'compressed');
+    // Create directories if they don’t exist
+    const baseDir = path.join(process.cwd(), 'public', 'uploads');
+    const originalDir = path.join(baseDir, 'original');
+    const compressedDir = path.join(baseDir, 'compressed');
 
-      if (!existsSync(originalDir)) await mkdir(originalDir, { recursive: true });
-      if (!existsSync(compressedDir)) await mkdir(compressedDir, { recursive: true });
+    if (!existsSync(originalDir)) await mkdir(originalDir, { recursive: true });
+    if (!existsSync(compressedDir)) await mkdir(compressedDir, { recursive: true });
 
-      // Create file names
-      const timestamp = Date.now();
-      const safeName = file.name.replace(/\s/g, '');
-      const originalFilename = `${timestamp}-${safeName}`;
-      const compressedFilename = originalFilename.replace(path.extname(safeName), '.jpg'); // ensure .jpg for compressed
+    // Create file names
+    const timestamp = Date.now();
+    const safeName = file.name.replace(/\s/g, '');
+    const originalFilename = `${timestamp}-${safeName}`;
+    const compressedFilename = originalFilename.replace(path.extname(safeName), '.jpg'); // ensure .jpg for compressed
 
-      // Define paths
-      const originalPath = path.join(originalDir, originalFilename);
-      const compressedPath = path.join(compressedDir, compressedFilename);
+    // Define paths
+    const originalPath = path.join(originalDir, originalFilename);
+    const compressedPath = path.join(compressedDir, compressedFilename);
 
-      // Define relative paths for uploads
-      const originalAbsolutePath = path.join('uploads', 'original', originalFilename);
-      const compressedAbsolutePath = path.join('uploads', 'compressed', compressedFilename);
+    // Define relative paths for uploads
+    const originalAbsolutePath = path.join('uploads', 'original', originalFilename);
+    const compressedAbsolutePath = path.join('uploads', 'compressed', compressedFilename);
 
-      // Compress the image using sharp
-      const outputBuffer = await sharp(buffer)
-        .resize({ width: 800, height: 600, fit: 'inside' }) // Resize within 800x600
-        .jpeg({ quality: 80 }) // Compress to 80% quality
-        .toBuffer();
+    // Compress the image using sharp
+    const outputBuffer = await sharp(buffer)
+      .resize({ width: 800, height: 600, fit: 'inside' }) // Resize within 800x600
+      .jpeg({ quality: 80 }) // Compress to 80% quality
+      .toBuffer();
 
-      // Save to SQLite
-      await new Promise<void>((resolve, reject) => {
-        sqlDB.run(
-          'INSERT INTO images (name, type, size, compressedSize, originalFile, compressedFile) VALUES (?, ?, ?, ?, ?, ?)',
-          [file.name, file.type, file.size, outputBuffer.length, originalAbsolutePath, compressedAbsolutePath],
-          async (err) => {
-            if (err) {
-              reject(err);
-              return internalServerError(`Error saving to database: ${err.message}`);
-            } else {
-              // Save original file
-              await writeFile(originalPath, buffer);
-              // Save compressed file
-              await writeFile(compressedPath, outputBuffer);
-              resolve();
-              return successResponse('Image details saved to database successfully.')
-            }
+    // Save to SQLite
+    await new Promise<void>((resolve, reject) => {
+      sqlDB.run(
+        'INSERT INTO images (name, type, size, compressedSize, originalFile, compressedFile) VALUES (?, ?, ?, ?, ?, ?)',
+        [file.name, file.type, file.size, outputBuffer.length, originalAbsolutePath, compressedAbsolutePath],
+        async (err) => {
+          if (err) {
+            reject(err);
+            return internalServerError(`Error saving to database: ${err.message}`);
+          } else {
+            // Save original file
+            await writeFile(originalPath, buffer);
+            // Save compressed file
+            await writeFile(compressedPath, outputBuffer);
+            resolve();
           }
-        );
-      });
+        }
+      );
+    });
 
-      // Fetch the newly inserted image details
-      const newImage = await new Promise<ImageProp>((resolve, reject) => {
-        sqlDB.get(
-          'SELECT * FROM images WHERE originalFile = ? AND compressedFile = ?',
-          [originalAbsolutePath, compressedAbsolutePath],
-          (err, row) => {
-            if (err) {
-              reject(err);
-              return createResponse(`Error fetching new image from database: ${err.message}`, 500)
-            } else {
-              resolve(row as ImageProp);
-            }
-          });
-      });
-      return successResponse('Image uploaded successfully', [newImage]);
+    // Fetch the newly inserted image details
+    const newImage = await new Promise<ImageProp>((resolve, reject) => {
+      sqlDB.get(
+        'SELECT * FROM images WHERE originalFile = ? AND compressedFile = ?',
+        [originalAbsolutePath, compressedAbsolutePath],
+        (err, row) => {
+          if (err) {
+            reject(err);
+            return createResponse(`Error fetching new image from database: ${err.message}`, 500);
+          } else {
+            resolve(row as ImageProp);
+          }
+        }
+      );
+    });
+
+    return successResponse('Image uploaded successfully', [newImage]);
   } catch {
-    return createResponse('Error compressing image', 500)
+    return createResponse('Error compressing image', 500);
   }
 }
 
